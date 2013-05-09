@@ -12,6 +12,7 @@ import java.io.FileReader;
 import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Hashtable;
+import java.util.Iterator;
 import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.Vector;
@@ -22,13 +23,14 @@ public class DecisionTree {
 	/**
 	 * 
 	 * @param examples - our data set, from which we will calculate the entropy of
-	 * @param classifiers - all different classes we can output
+	 * @param classifiers - all different classes we can output.
+	 * 	Key is a String of classifier, Value is number of occurences
 	 * @return entropy - uncertainty of data
 	 */
-	public float entropy(Vector<Vector<Attribute>> examples, Hashtable<String, Integer> classifiers){
+	public float entropy(int total, Hashtable<String, Integer> classifiers)
+	{
 		System.out.println("Running entropy function...");
 		float total_entropy = 0;
-		int total = examples.size();
 		System.out.println("total # of examples: " + total);
 
 		/* enumerate over all keys in examples (HashTable) */
@@ -39,6 +41,24 @@ public class DecisionTree {
 		}
 		return -total_entropy;
 	}
+	
+	public float remainder(	Vector<Vector<Attribute>> examples,
+							Vector<Set<String>> attr_values,
+							Hashtable<String, Integer> classifiers, int attr)
+	{
+		float entropy = 0;
+		int total = examples.size();
+		Iterator<String> it = attr_values.get(attr).iterator();
+		
+		
+		
+		return entropy;
+	}
+	
+	
+	
+	
+	
 	/**
 	 * @param args - filename of csv file
 	 */
@@ -114,7 +134,7 @@ public class DecisionTree {
 //			System.out.println("entropy: " + (-entropy));
 
 			DecisionTree dt = new DecisionTree();
-			float entropy = dt.entropy(training_set, classifiers);
+			float entropy = dt.entropy(training_set.size(), classifiers);
 			System.out.println("entroppy: " + entropy);
 
 
