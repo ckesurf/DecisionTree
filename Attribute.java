@@ -25,4 +25,9 @@ public class Attribute {
 		value = v;
 		return value;
 	}
+	
+	public String toString()
+	{
+		return value;
+	}
 }

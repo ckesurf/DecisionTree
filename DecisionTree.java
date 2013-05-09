@@ -9,21 +9,47 @@
 
 import java.io.BufferedReader;
 import java.io.FileReader;
-import java.io.FileWriter;
+import java.util.Enumeration;
+import java.util.HashSet;
+import java.util.Hashtable;
+import java.util.Set;
 import java.util.StringTokenizer;
+import java.util.Vector;
 
 
 public class DecisionTree {
 
+	/**
+	 * 
+	 * @param examples - our data set, from which we will calculate the entropy of
+	 * @param classifiers - all different classes we can output
+	 * @return entropy - uncertainty of data
+	 */
+	public float entropy(Vector<Vector<Attribute>> examples, Hashtable<String, Integer> classifiers){
+		System.out.println("Running entropy function...");
+		float total_entropy = 0;
+		int total = examples.size();
+		System.out.println("total # of examples: " + total);
+
+		/* enumerate over all keys in examples (HashTable) */
+		for (Enumeration<String> e = classifiers.keys(); e.hasMoreElements();) {
+			/* c is the number of occurrences of the corresponding key */
+			float c = classifiers.get(e.nextElement());
+			total_entropy += (c/total)* Math.log(c/total)/Math.log(2);
+		}
+		return -total_entropy;
+	}
 	/**
 	 * @param args - filename of csv file
 	 */
 	public static void main(String[] args) {
 
 		/* parse filename and create a Vector of Attributes */
+		Vector<Attribute> input;
+		Vector<Vector<Attribute>> training_set = new Vector<Vector<Attribute>>();
+		Vector<Set<String>> attr_values = new Vector<Set<String>>();
 
-		try
-		{
+		try {
 
 			//csv file containing data
 			String strFile = "src/restaurant.csv";
@@ -32,36 +58,69 @@ public class DecisionTree {
 			BufferedReader br = new BufferedReader( new FileReader(strFile));
 			String strLine = "";
 			StringTokenizer st = null;
-			int lineNumber = 0, tokenNumber = 0;
+			/* HashTable of classifiers */
+			Hashtable<String, Integer> classifiers = new Hashtable<String, Integer>();
+			boolean first_time = true;
 
 			//read comma separated file line by line
-			while( (strLine = br.readLine()) != null)
-			{
-				lineNumber++;
-
+			while( (strLine = br.readLine()) != null) {
+				input = new Vector<Attribute>(12);
 				//break comma separated line using ","
 				st = new StringTokenizer(strLine, ", ");
+				int col = 0;
 
-				while(st.hasMoreTokens())
-				{
+				while(st.hasMoreTokens()) {
 					//display csv values
-					tokenNumber++;
-					System.out.println("Line # " + lineNumber +
-							", Token # " + tokenNumber
-							+ ", Token : "+ st.nextToken());
+					String value = st.nextToken();
+					input.add(new Attribute(value));
+					/* add the value to the corresponding attribute,
+					   if not already added */
+					if (first_time)
+						attr_values.add(new HashSet());
+					attr_values.get(col).add(value);
+					col++;
 				}
 
-				//reset token number
-				tokenNumber = 0;
+				first_time = false;
+
+				/* if classifier isn't a key in our Hashtable, add it */
+				String cl = input.lastElement().toString();
+				if (!classifiers.containsKey(cl))
+					classifiers.put(cl, 1);
+				else
+					classifiers.put(cl, classifiers.get(cl) + 1);
+
+				training_set.add(input);
 
 			}
 
+			System.out.println("Classifiers: " + classifiers.toString());
+			System.out.println("Possible values for Attributes: " + attr_values.toString());
 
-		}
-		catch(Exception e)
-		{
+			/* Entropy function for total training set here */
+//			float entropy = 0;
+//
+//			int total = training_set.size();
+//			System.out.println("total # of examples: " + total);
+//
+//			/* enumerate over all keys in classifiers (HashTable) */
+//			for (Enumeration<String> e = classifiers.keys(); e.hasMoreElements();) {
+//				/* c is the number of occurrences of the corresponding key */
+//				float c = classifiers.get(e.nextElement());
+//				entropy += (c/total)* Math.log(c/total)/Math.log(2);
+//			}
+//
+//			/* remember to negate */
+//			System.out.println("entropy: " + (-entropy));
+
+			DecisionTree dt = new DecisionTree();
+			float entropy = dt.entropy(training_set, classifiers);
+			System.out.println("entroppy: " + entropy);
+
+
+		} catch(Exception e) {
 			System.out.println("Exception while reading csv file: " + e);                  
-		}
+		}		
 	}
 }	
 
