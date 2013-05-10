@@ -29,6 +29,12 @@ public class Attribute {
 		classifier = null;
 	}
 	
+	public Attribute(String v, String cls)
+	{
+		value = v;
+		classifier = cls;
+	}
+	
 	public int getCol()
 	{
 		return col;

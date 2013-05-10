@@ -13,6 +13,7 @@ import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.Vector;
@@ -137,9 +138,48 @@ public class DecisionTree {
 		return null;
 	}
 
+	/**
+	 * same returns true if every vector of data has the same class,
+	 * specifically if the last element all have the same non-null cls
+	 * 
+	 * @param examples - the vectors of data
+	 * @return true if they are all the same, false otherwise
+	 */
+	public boolean same(Vector<Vector<Attribute>> examples)
+	{
+		String cls = examples.firstElement().lastElement().getCls();
+		for (Vector<Attribute> vec : examples) {
+			if (!vec.lastElement().getCls().equals(cls))
+				return false;
+		}
+		return true;
+	}
 
-
-
+	public Node<Attribute> plurality(Vector<Vector<Attribute>> examples)
+	{
+		/* Hashtable of how many classes, will tally up and see max later */
+		Hashtable<String, Integer> clsrs = new Hashtable<String, Integer>();
+		for (Vector<Attribute> vec : examples) {
+			String cl = vec.lastElement().getCls();
+			if (!clsrs.containsKey(cl))
+				clsrs.put(cl, 1);
+			else
+				clsrs.put(cl, clsrs.get(cl) + 1);
+		}
+		/* which key in clsrs has the most hits? */
+		String maxKey=null;
+		Integer maxValue = Integer.MIN_VALUE; 
+		for(Map.Entry<String, Integer> entry : clsrs.entrySet()) {
+		     if(entry.getValue() > maxValue) {
+		         maxValue = entry.getValue();
+		         maxKey = entry.getKey();
+		     }
+		}
+		/* make leaf node with maxKey as cls */
+		Attribute leaf = new Attribute(null, maxKey);
+		return new Node<Attribute>(leaf);
+		
+	}
 
 	/**
 	 * @param args - filename of csv file
@@ -203,21 +243,6 @@ public class DecisionTree {
 			System.out.println("Classifiers: " + classifiers.toString());
 			System.out.println("Possible values for Attributes: " + attr_values.toString());
 
-			/* Entropy function for total training set here */
-			//			float entropy = 0;
-			//
-			//			int total = training_set.size();
-			//			System.out.println("total # of examples: " + total);
-			//
-			//			/* enumerate over all keys in classifiers (HashTable) */
-			//			for (Enumeration<String> e = classifiers.keys(); e.hasMoreElements();) {
-			//				/* c is the number of occurrences of the corresponding key */
-			//				float c = classifiers.get(e.nextElement());
-			//				entropy += (c/total)* Math.log(c/total)/Math.log(2);
-			//			}
-			//
-			//			/* remember to negate */
-			//			System.out.println("entropy: " + (-entropy));
 
 			DecisionTree dt = new DecisionTree();
 			float r_entropy = dt.remainder(training_set, attr_values, 4);

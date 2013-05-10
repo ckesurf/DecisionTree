@@ -19,3 +19,22 @@ For testing our traverse() function
 
 			String output = dt.traverse(patronsNode, training_set.get(0));
 			System.out.println("output: " + output);
+			
+			
+			
+						/* Entropy function for total training set here */
+			//			float entropy = 0;
+			//
+			//			int total = training_set.size();
+			//			System.out.println("total # of examples: " + total);
+			//
+			//			/* enumerate over all keys in classifiers (HashTable) */
+			//			for (Enumeration<String> e = classifiers.keys(); e.hasMoreElements();) {
+			//				/* c is the number of occurrences of the corresponding key */
+			//				float c = classifiers.get(e.nextElement());
+			//				entropy += (c/total)* Math.log(c/total)/Math.log(2);
+			//			}
+			//
+			//			/* remember to negate */
+			//			System.out.println("entropy: " + (-entropy));
+			
