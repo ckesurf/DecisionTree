@@ -1,0 +1,21 @@
+For testing our traverse() function
+
+			Attribute patrons = new Attribute();
+			patrons.setPosValues(attr_values.get(4));
+			patrons.setCol(4);
+
+			Node<Attribute> patronsNode = new Node<Attribute>(patrons);
+
+			Node<Attribute> none = new Node<Attribute>(new Attribute("None"));
+			none.data.setCls("No");
+			Node<Attribute> some = new Node<Attribute>(new Attribute("Some"));
+			some.data.setCls("Yes");
+			Node<Attribute> full = new Node<Attribute>(new Attribute("Full"));
+
+			patronsNode.addChild(none); 
+			patronsNode.addChild(some);
+			patronsNode.addChild(full);
+			Vector<Attribute> ex = training_set.get(0);
+
+			String output = dt.traverse(patronsNode, training_set.get(0));
+			System.out.println("output: " + output);
