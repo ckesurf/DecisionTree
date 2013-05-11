@@ -276,10 +276,12 @@ public class DecisionTree {
 	
 	
 	/**
-	 * @param args - filename of csv file
+	 * parser() generates the DecisionTree from the training data given in a
+	 * csv file (in our case, restaurant.csv
+	 * 
+	 * @param filename - filename of csv file that is training data
 	 */
-	public static void main(String[] args) {
-
+	public void parser(String strFile) {
 		/* parse filename and create a Vector of Attributes */
 		Vector<Attribute> input;
 		Vector<Vector<Attribute>> training_set = new Vector<Vector<Attribute>>();
@@ -288,7 +290,6 @@ public class DecisionTree {
 		try {
 
 			//csv file containing data
-			String strFile = "src/restaurant.csv";
 
 			//create BufferedReader to read csv file
 			BufferedReader br = new BufferedReader( new FileReader(strFile));
@@ -347,11 +348,8 @@ public class DecisionTree {
 			System.out.println("Classifiers: " + classifiers.toString());
 			System.out.println("Possible values for Attributes: " + attr_values.toString());
 
-
-			DecisionTree dt = new DecisionTree();
-			Node<Attribute> patronsTree = dt.dTL(training_set, attr_values, training_set);
+			root = dTL(training_set, attr_values, training_set);
 			
-			dt.write();
 			
 		} catch(Exception e) {
 			System.out.println("Exception while reading csv file: " + e);                  
