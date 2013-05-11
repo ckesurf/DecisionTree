@@ -259,7 +259,7 @@ public class DecisionTree {
 				Set<String> temp = attr_values.get(bestAttr);
 				attr_values.set(bestAttr, null);
 				Node<Attribute> subtree = dTL(exs, attr_values, examples);
-				/* ad hoc, but leaf nodes need values... acts as transition */
+				/* ad hoc, but leaf nodes need values... acts as transition for traversal */
 				subtree.data.setValue(value);
 				tree.addChild(subtree);
 				attr_values.set(bestAttr, temp);
@@ -346,11 +346,11 @@ public class DecisionTree {
 
 			DecisionTree dt = new DecisionTree();
 			Node<Attribute> patronsTree = dt.dTL(training_set, attr_values, training_set);
-			
-			
-			String output = dt.traverse(patronsTree, training_set.get(0));
-			System.out.println("output: " + output);
-			
+
+			for (int i = 0; i < 12; i++) {
+				String output = dt.traverse(patronsTree, training_set.get(i));
+				System.out.println("output: " + output);
+			}
 		} catch(Exception e) {
 			System.out.println("Exception while reading csv file: " + e);                  
 		}		
