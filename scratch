@@ -1,4 +1,11 @@
-For testing our entropy functions
+For ensuring our dlt is the same as our training data:
+
+			for (int i = 0; i < 12; i++) {
+				String output = dt.traverse(patronsTree, training_set.get(i));
+				System.out.println("output: " + output);
+			}
+
+For testing our entropy functions:
 			
 			float r_entropy = dt.remainder(training_set, attr_values, 4);
 			System.out.println("remaining entropy on Patrons: " + r_entropy);
@@ -9,7 +16,7 @@ For testing our entropy functions
 
 			System.out.println("bestAttr: " + bestAttr);
 
-For testing our traverse() function
+For testing our traverse() function:
 
 			Attribute patrons = new Attribute();
 			patrons.setPosValues(attr_values.get(4));

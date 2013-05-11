@@ -7,8 +7,7 @@
  *
  */
 
-import java.io.BufferedReader;
-import java.io.FileReader;
+import java.io.*;
 import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Hashtable;
@@ -24,7 +23,8 @@ import javax.swing.tree.DefaultMutableTreeNode;
 
 public class DecisionTree {
 
-	JTree root;
+	Node<Attribute> root;
+
 
 	/**
 	 * 
@@ -135,8 +135,10 @@ public class DecisionTree {
 			}
 			/* if we get here, throw exception: 
 			 * 	input had a value that we've never seen before */
+			System.out.println("Error: traverse() returned null");
+			return null;
 		}
-		return null;
+
 	}
 
 	/**
@@ -215,9 +217,9 @@ public class DecisionTree {
 	}
 
 	public Vector<Vector<Attribute>> filter(Vector<Vector<Attribute>> examples,
-											String value,
-											int attr) 
-	{
+			String value,
+			int attr) 
+			{
 		Vector<Vector<Attribute>> subset = new Vector<Vector<Attribute>>(examples.size());
 		for (Vector<Attribute> vec : examples) {
 			if (vec.get(attr).getValue().equals(value)) {
@@ -225,12 +227,12 @@ public class DecisionTree {
 			}
 		}
 		return subset;
-	}
+			}
 
 	public Node<Attribute> dTL(	Vector<Vector<Attribute>> examples,
 			Vector<Set<String>> attr_values,
 			Vector<Vector<Attribute>> parent_examples)
-	{
+			{
 		/* first three conditions generate leaf nodes (classifier nodes) */
 		if (examples.isEmpty())
 			return plurality(parent_examples);
@@ -248,11 +250,11 @@ public class DecisionTree {
 			attr.setCol(bestAttr);
 			attr.setPosValues(attr_values.get(bestAttr));
 			Node<Attribute> tree = new Node<Attribute>(attr);
-			
+
 			/* set bestAttr in attr_values to null, we're not going to
 			 * use it anymore */
 
-			
+
 			for (String value : attr_values.get(bestAttr)) {
 				/* subset of examples that has "value" */
 				Vector<Vector<Attribute>> exs = filter(examples, value, bestAttr);
@@ -269,8 +271,10 @@ public class DecisionTree {
 
 			return tree;
 		}
-	}
+			}
 
+	
+	
 	/**
 	 * @param args - filename of csv file
 	 */
@@ -346,11 +350,9 @@ public class DecisionTree {
 
 			DecisionTree dt = new DecisionTree();
 			Node<Attribute> patronsTree = dt.dTL(training_set, attr_values, training_set);
-
-			for (int i = 0; i < 12; i++) {
-				String output = dt.traverse(patronsTree, training_set.get(i));
-				System.out.println("output: " + output);
-			}
+			
+			dt.write();
+			
 		} catch(Exception e) {
 			System.out.println("Exception while reading csv file: " + e);                  
 		}		
