@@ -181,6 +181,22 @@ public class DecisionTree {
 		
 	}
 
+	public int importance(	Hashtable<String, Integer> classifiers, 
+							Vector<Vector<Attribute>> examples,
+							Vector<Set<String>> attr_values)
+	{
+		int index = 0;
+		float maxGain = 0;
+		for (int i = 0; i < attr_values.size(); i++) {
+			float tempGain = gain(classifiers, examples, attr_values, i);
+			if (tempGain > maxGain) {
+				maxGain = tempGain;
+				index = i;
+			}
+		}
+		return index;
+	}
+	
 	/**
 	 * @param args - filename of csv file
 	 */
@@ -227,7 +243,11 @@ public class DecisionTree {
 					col++;
 				}
 
-				first_time = false;
+				/* remove the last element in attr_values; it is a
+				 * classifier, not an attribute */
+				if (first_time) {
+					first_time = false;
+				}
 
 				/* if classifier isn't a key in our Hashtable, add it */
 				String cl = input.lastElement().toString();
@@ -239,7 +259,8 @@ public class DecisionTree {
 				training_set.add(input);
 
 			}
-
+			/* remove last set in attr_values, its a classifier */
+			attr_values.remove(attr_values.size()-1);
 			System.out.println("Classifiers: " + classifiers.toString());
 			System.out.println("Possible values for Attributes: " + attr_values.toString());
 
@@ -250,6 +271,9 @@ public class DecisionTree {
 			float gain_entropy = dt.gain(classifiers, training_set, attr_values, 4);
 			System.out.println("gain entropy on Patrons: " + gain_entropy);
 
+			int bestAttr = dt.importance(classifiers, training_set, attr_values);
+			
+			System.out.println("bestAttr: " + bestAttr);
 
 		} catch(Exception e) {
 			System.out.println("Exception while reading csv file: " + e);                  
