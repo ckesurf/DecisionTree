@@ -86,7 +86,7 @@ public class DecisionTree {
 				if (vec.get(attr).toString().equals(value)) {
 					count++;
 					/* put it to our temporary Hashtable */
-					String cl = vec.lastElement().toString();
+					String cl = vec.lastElement().getCls();
 					if (!clrs.containsKey(cl))
 						clrs.put(cl, 1);
 					else
@@ -170,33 +170,99 @@ public class DecisionTree {
 		String maxKey=null;
 		Integer maxValue = Integer.MIN_VALUE; 
 		for(Map.Entry<String, Integer> entry : clsrs.entrySet()) {
-		     if(entry.getValue() > maxValue) {
-		         maxValue = entry.getValue();
-		         maxKey = entry.getKey();
-		     }
+			if(entry.getValue() > maxValue) {
+				maxValue = entry.getValue();
+				maxKey = entry.getKey();
+			}
 		}
 		/* make leaf node with maxKey as cls */
 		Attribute leaf = new Attribute(null, maxKey);
 		return new Node<Attribute>(leaf);
-		
+
 	}
 
 	public int importance(	Hashtable<String, Integer> classifiers, 
-							Vector<Vector<Attribute>> examples,
-							Vector<Set<String>> attr_values)
+			Vector<Vector<Attribute>> examples,
+			Vector<Set<String>> attr_values)
 	{
 		int index = 0;
 		float maxGain = 0;
 		for (int i = 0; i < attr_values.size(); i++) {
-			float tempGain = gain(classifiers, examples, attr_values, i);
-			if (tempGain > maxGain) {
-				maxGain = tempGain;
-				index = i;
+			if (attr_values.get(i) != null) {
+				float tempGain = gain(classifiers, examples, attr_values, i);
+				if (tempGain > maxGain) {
+					maxGain = tempGain;
+					index = i;
+				}
 			}
 		}
 		return index;
 	}
-	
+
+	public Hashtable<String, Integer> classify(Vector<Vector<Attribute>> examples)
+	{
+		Hashtable<String, Integer> classifiers = new Hashtable<String, Integer>();
+
+		for (Vector<Attribute> row : examples) {
+			String cl = row.lastElement().getCls();
+			if (!classifiers.containsKey(cl))
+				classifiers.put(cl, 1);
+			else
+				classifiers.put(cl, classifiers.get(cl) + 1);
+		}
+		return classifiers;
+	}
+
+	public Vector<Vector<Attribute>> filter(Vector<Vector<Attribute>> examples,
+											String value,
+											int attr) 
+	{
+		Vector<Vector<Attribute>> subset = new Vector<Vector<Attribute>>(examples.size());
+		for (Vector<Attribute> vec : examples) {
+			if (vec.get(attr).getValue().equals(value)) {
+				subset.add(vec);
+			}
+		}
+		return subset;
+	}
+
+	public Node<Attribute> dTL(	Vector<Vector<Attribute>> examples,
+			Vector<Set<String>> attr_values,
+			Vector<Vector<Attribute>> parent_examples)
+	{
+		/* first three conditions generate leaf nodes (classifier nodes) */
+		if (examples.isEmpty())
+			return plurality(parent_examples);
+		else if (same(examples)) {
+			Attribute clsr = new Attribute(null, examples.firstElement().firstElement().getCls());
+			return new Node<Attribute>(clsr);
+		} else if (attr_values.isEmpty()) 
+			return plurality(examples);
+		else {
+			Hashtable<String, Integer> classifiers = classify(examples);
+			int bestAttr = importance(classifiers, examples, attr_values);
+
+			/* make a Node "tree" here */
+			Attribute attr = new Attribute();
+			attr.setCol(bestAttr);
+			Node<Attribute> tree = new Node<Attribute>(attr);
+
+			for (String value : attr_values.get(bestAttr)) {
+				/* subset of examples that has "value" */
+				Vector<Vector<Attribute>> exs = filter(examples, value, bestAttr);
+				/* set bestAttr in attr_values to null, we're not going to
+				 * use it anymore */
+				attr_values.set(bestAttr, null);
+				Node<Attribute> subtree = dTL(exs, attr_values, examples);
+				tree.addChild(subtree);
+			}
+			/**/ 
+
+
+			return tree;
+		}
+	}
+
 	/**
 	 * @param args - filename of csv file
 	 */
@@ -243,14 +309,19 @@ public class DecisionTree {
 					col++;
 				}
 
-				/* remove the last element in attr_values; it is a
-				 * classifier, not an attribute */
 				if (first_time) {
 					first_time = false;
 				}
 
+				/* Set the last Attribute's cls to what its value was and set
+				 * its value to null; remember, last Attribute in a Vector is
+				 * always the classifier
+				 */
+				input.lastElement().setCls(input.lastElement().getValue());				
+				input.lastElement().setValue(null);
+
 				/* if classifier isn't a key in our Hashtable, add it */
-				String cl = input.lastElement().toString();
+				String cl = input.lastElement().getCls();
 				if (!classifiers.containsKey(cl))
 					classifiers.put(cl, 1);
 				else
@@ -272,9 +343,15 @@ public class DecisionTree {
 			System.out.println("gain entropy on Patrons: " + gain_entropy);
 
 			int bestAttr = dt.importance(classifiers, training_set, attr_values);
-			
-			System.out.println("bestAttr: " + bestAttr);
 
+			System.out.println("bestAttr: " + bestAttr);
+			
+			attr_values.set(5, null);
+			System.out.println("attr_values size: " + attr_values.size());
+			
+			attr_values.set(6, null);
+			System.out.println("attr_values size: " + attr_values.size());
+			
 		} catch(Exception e) {
 			System.out.println("Exception while reading csv file: " + e);                  
 		}		

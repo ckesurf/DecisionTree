@@ -1,3 +1,14 @@
+For testing our entropy functions
+			
+			float r_entropy = dt.remainder(training_set, attr_values, 4);
+			System.out.println("remaining entropy on Patrons: " + r_entropy);
+			float gain_entropy = dt.gain(classifiers, training_set, attr_values, 4);
+			System.out.println("gain entropy on Patrons: " + gain_entropy);
+
+			int bestAttr = dt.importance(classifiers, training_set, attr_values);
+
+			System.out.println("bestAttr: " + bestAttr);
+
 For testing our traverse() function
 
 			Attribute patrons = new Attribute();
