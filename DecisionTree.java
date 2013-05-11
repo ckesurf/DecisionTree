@@ -129,6 +129,7 @@ public class DecisionTree {
 			Iterator<Node<Attribute>> itChild = node.children.iterator();
 			while(itChild.hasNext()) {
 				Node<Attribute> child = itChild.next();
+
 				if (child.getData().getValue().equals(v))
 					return traverse(child, input);
 			}
@@ -234,7 +235,7 @@ public class DecisionTree {
 		if (examples.isEmpty())
 			return plurality(parent_examples);
 		else if (same(examples)) {
-			Attribute clsr = new Attribute(null, examples.firstElement().firstElement().getCls());
+			Attribute clsr = new Attribute(null, examples.firstElement().lastElement().getCls());
 			return new Node<Attribute>(clsr);
 		} else if (attr_values.isEmpty()) 
 			return plurality(examples);
@@ -245,16 +246,23 @@ public class DecisionTree {
 			/* make a Node "tree" here */
 			Attribute attr = new Attribute();
 			attr.setCol(bestAttr);
+			attr.setPosValues(attr_values.get(bestAttr));
 			Node<Attribute> tree = new Node<Attribute>(attr);
+			
+			/* set bestAttr in attr_values to null, we're not going to
+			 * use it anymore */
 
+			
 			for (String value : attr_values.get(bestAttr)) {
 				/* subset of examples that has "value" */
 				Vector<Vector<Attribute>> exs = filter(examples, value, bestAttr);
-				/* set bestAttr in attr_values to null, we're not going to
-				 * use it anymore */
+				Set<String> temp = attr_values.get(bestAttr);
 				attr_values.set(bestAttr, null);
 				Node<Attribute> subtree = dTL(exs, attr_values, examples);
+				/* ad hoc, but leaf nodes need values... acts as transition */
+				subtree.data.setValue(value);
 				tree.addChild(subtree);
+				attr_values.set(bestAttr, temp);
 			}
 			/**/ 
 
@@ -288,7 +296,7 @@ public class DecisionTree {
 
 			//read comma separated file line by line
 			while( (strLine = br.readLine()) != null) {
-				input = new Vector<Attribute>(12);
+				input = new Vector<Attribute>(11);
 				//break comma separated line using ","
 				st = new StringTokenizer(strLine, ", ");
 				int col = 0;
@@ -337,20 +345,11 @@ public class DecisionTree {
 
 
 			DecisionTree dt = new DecisionTree();
-			float r_entropy = dt.remainder(training_set, attr_values, 4);
-			System.out.println("remaining entropy on Patrons: " + r_entropy);
-			float gain_entropy = dt.gain(classifiers, training_set, attr_values, 4);
-			System.out.println("gain entropy on Patrons: " + gain_entropy);
-
-			int bestAttr = dt.importance(classifiers, training_set, attr_values);
-
-			System.out.println("bestAttr: " + bestAttr);
+			Node<Attribute> patronsTree = dt.dTL(training_set, attr_values, training_set);
 			
-			attr_values.set(5, null);
-			System.out.println("attr_values size: " + attr_values.size());
 			
-			attr_values.set(6, null);
-			System.out.println("attr_values size: " + attr_values.size());
+			String output = dt.traverse(patronsTree, training_set.get(0));
+			System.out.println("output: " + output);
 			
 		} catch(Exception e) {
 			System.out.println("Exception while reading csv file: " + e);                  
