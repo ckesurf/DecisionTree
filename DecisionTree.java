@@ -18,8 +18,6 @@ import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.Vector;
 
-import javax.swing.JTree;
-import javax.swing.tree.DefaultMutableTreeNode;
 
 
 public class DecisionTree {
@@ -315,7 +313,7 @@ public class DecisionTree {
 					/* for the first row, add to attr_values empty sets fore
 					 * every new attribute */
 					if (first_time)
-						attr_values.add(new HashSet());
+						attr_values.add(new HashSet<String>());
 
 					/* add the value to the corresponding attribute,
 					 * if not already added */
