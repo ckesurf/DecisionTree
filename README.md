@@ -31,12 +31,8 @@ COMS W4701 * Artificial Intelligence
 	3. Run the executable on the training data:
 		> ProgWriter.class restaurant2_train.csv
 
-	4. Run "make output". This will run the OutputTree executable on the test data.
-
-	5. Run the executable on the test data
-		> OutputTree.class restaurant2_test.csv
-
-	   This will output the classifiers.
+	4. Run "make classify". This will run the OutputTree executable on the 
+		test data. This will output the classifiers.
 
 *************************************************************************
 
@@ -47,15 +43,17 @@ COMS W4701 * Artificial Intelligence
 Files:
 
 Makefile
-	- make 		# for compiling
-	- make output	# for executing the game
-	- clean		# for removing the generated .class files
+	- make 			# for compiling and writing the output program, OutputTree.java
+	- make classify	# for classifying the re
+	- clean			# for removing the generated .class files and the
+					# generated output Java program
 
-Board.java
-	- This implements the Board structure and all of the game functions.
-	Most importantly it has BESTMOVE, which implements the Minimax and
-	alpha-beta pruning algorithms
+ Attribute.java DecisionTree.java Node.java
 
+ProgWriter.java
+	-  
+	
+	
 Pair.java
 	- This implements the Pair class which is only used for returning
 	the evaluation (or "score") of a Board and the Board itself in 
